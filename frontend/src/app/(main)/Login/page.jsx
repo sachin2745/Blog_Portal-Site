@@ -108,9 +108,9 @@ const Login = () => {
                       Password
                     </label>
                     <div className="text-sm">
-                      <a href="/resetPassword" className="font-semibold text-spaceblack/70 hover:text-black">
+                      <Link href="/resetPassword" className="font-semibold text-spaceblack/70 hover:text-black">
                         Forgot password?
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   <div className="relative">
@@ -164,7 +164,7 @@ const Login = () => {
 
               <p className="mt-10 mb-5 text-center text-sm text-gray-700">
                 Not a member?{' '}
-                <Link href="/Signup" className="font-semibold font-Jost leading-6 text-spaceblack/90 hover:text-black">
+                <Link href="/Signup" className="font-semibold  leading-6 text-spaceblack/90 hover:text-black">
                   Register for an account
                 </Link>
               </p>

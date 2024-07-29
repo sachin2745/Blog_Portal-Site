@@ -67,9 +67,9 @@ const Home = () => {
                     <h1 className="title-font text-lg font-medium text-gray-900 mb-3">
                       {post.category}
                     </h1>
-                    <p className="leading-relaxed mb-3 line-clamp-*">
+                    <h2 className="leading-relaxed mb-3 line-clamp-*">
                       {post.title}
-                    </p>
+                    </h2>
                     <div className="flex items-center flex-wrap">
                       <Link
                         href={"/viewblog/" + post._id}
