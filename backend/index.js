@@ -87,8 +87,8 @@ passport.deserializeUser((user, done) => {
 app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
 app.get("/auth/google/callback", passport.authenticate("google", {
-    successRedirect: "http://localhost:3000/dashboard",
-    failureRedirect: "http://localhost:3000/login"
+    successRedirect: "http://localhost:3000/Dashboard",
+    failureRedirect: "http://localhost:3000/Login"
 }));
 
 app.get("/login/success", async (req, res) => {
