@@ -3,21 +3,19 @@ const router = express.Router();
 const Model = require('../model/postModel');
 const verifyToken = require('./verifyToken');
 
-router.post('/add', verifyToken,(req, res) => {
-    console.log(req.body);
-    new Model(req.body).save() //save date in mongoDB
+// Add a new post
+router.post('/add', verifyToken, (req, res) => {
+    new Model(req.body).save()
         .then((result) => {
-            res.status(200).json(result);  //200 status means successfull
+            res.status(200).json(result);
         }).catch((err) => {
             console.log(err);
-            res.status(500).json(err); //500 status means server side error 
+            res.status(500).json(err);
         });
-
 });
 
-//request accept and show all data
+// Get all posts
 router.get('/getall', (req, res) => {
-
     Model.find()
         .then((result) => {
             res.status(200).json(result);
@@ -26,7 +24,42 @@ router.get('/getall', (req, res) => {
             res.status(500).json(err);
         });
 });
-// : denotes url parameter
+
+// Get a post by ID
+router.get("/getbyid/:id", (req, res) => {
+    Model.findById(req.params.id)
+        .then((result) => {
+            res.status(200).json(result);
+        }).catch((err) => {
+            console.error(err);
+            res.status(500).json(err);
+        });
+});
+
+// Get posts by category
+router.get("/getbycategory/:category", (req, res) => {
+    Model.find({ category: req.params.category })
+        .then((result) => {
+            res.status(200).json(result);
+        }).catch((err) => {
+            console.log(err);
+            res.status(500).json(err);
+        });
+});
+
+// Get recent posts
+router.get('/getposts', (req, res) => {
+    const limit = parseInt(req.query.limit) || 10; // Default limit to 10 if not specified
+    Model.find().sort({ createdAt: -1 }).limit(limit)
+        .then((result) => {
+            res.status(200).json({ posts: result });
+        }).catch((err) => {
+            console.log(err);
+            res.status(500).json(err);
+        });
+});
+
+// Delete a post by ID
 router.delete('/delete/:id', (req, res) => {
     Model.findByIdAndDelete(req.params.id)
         .then((result) => {
@@ -35,8 +68,9 @@ router.delete('/delete/:id', (req, res) => {
             console.log(err);
             res.status(500).json(err);
         });
-})
-// updating...
+});
+
+// Update a post by ID
 router.put('/update/:id', (req, res) => {
     Model.findByIdAndUpdate(req.params.id, req.body)
         .then((result) => {
@@ -45,33 +79,6 @@ router.put('/update/:id', (req, res) => {
             console.log(err);
             res.status(500).json(err);
         });
-})
-
-router.get("/getbyid/:id",(req,res)=>{
-
-    Model.findById(req.params.id)
-
-    .then((result)=>{
-        res.json(result);
-
-    }).catch((err)=>{
-        console.error(err)
-        res.status(500).json(err);
-    });
-});
-
-
-router.get("/getbycategory/:category",(req,res)=>{
-
-    Model.find({category: req.params.category})
-
-    .then((result)=>{
-        res.json(result);
-
-    }).catch((err)=>{
-        console.log(err);
-        res.status(500).json(err);
-    });
 });
 
 module.exports = router;

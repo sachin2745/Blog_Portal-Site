@@ -53,10 +53,10 @@ const Home = () => {
         ) : (
           <div className="flex flex-wrap -m-4">
             {postArray.map((post, index) => (
-              <div key={post._id} className="p-4 md:w-1/3 group">
-                <div className="h-full relative border-2 shadow-xl overflow-hidden border-gray-200 border-opacity-60 rounded-lg ">
+              <div key={post._id} className="p-4 md:w-1/3 ">
+                <div className="h-full relative border-2 shadow-xl  overflow-hidden border-gray-200 border-opacity-60 rounded-lg ">
                   <img
-                    className="lg:h-48 md:h-36 w-full object-cover object-center inset-0 opacity-80  group-hover:opacity-100 group-hover:scale-105 transition-opacity duration-500 ease-in-out"
+                    className="lg:h-48 md:h-36 w-full object-cover  block transition duration-200 ease-out transform hover:scale-110"
                     src={`${process.env.NEXT_PUBLIC_API_URL}/${post.image}`}
                     alt="blog"
                   />
