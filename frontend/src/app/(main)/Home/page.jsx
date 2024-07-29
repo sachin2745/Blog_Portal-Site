@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
+import Hero from '../Hero/page';
 
 const fetchPostData = async () => {
   try {
@@ -27,6 +28,7 @@ const Home = () => {
 
   return (
     <section className="text-gray-600 body-font bg-mate_black dark:bg-primary">
+      <Hero />
       <div className="text-center font-Jost text-black dark:text-black pt-10">
         <h1 className="font-bold text-3xl font-Montserrat">My Blog</h1>
         <h3 className="text-sm font-Montserrat ">Home &rsaquo; My Blog</h3>
@@ -73,7 +75,7 @@ const Home = () => {
                     </h2>
                     <div className="flex items-center flex-wrap ">
                       <Link
-                        href={"/viewblog/" + post._id}
+                        href={"/Viewblog/" + post._id}
                         className="text-emerald-600   inline-flex items-center md:mb-2 lg:mb-0"
                       >
                         Learn More <MdKeyboardDoubleArrowRight  />
