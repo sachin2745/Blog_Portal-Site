@@ -7,13 +7,14 @@ import { HiOutlineBookmark } from "react-icons/hi";
 import { IoMdSearch } from "react-icons/io";
 import Link from "next/link";
 import useAppContext from "@/context/AppContext";
+import { useRouter } from "next/navigation";
 
 const Headers = () => {
     const { logout, loggedIn, currentUser } = useAppContext();
     const [googleUser, setGoogleUser] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [isClient, setIsClient] = useState(false); // Client-side only flag
-
+    const router = useRouter();
     const defaultLogo = "/default-logo.png";
 
     useEffect(() => {
@@ -33,6 +34,23 @@ const Headers = () => {
 
         getUser();
     }, []);
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchTermFromUrl = urlParams.get('searchTerm');
+        if (searchTermFromUrl) {
+            setSearchTerm(searchTermFromUrl);
+        }
+    }, [router.asPath]);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const urlParams = new URLSearchParams(router.asPath.split('?')[1]);
+        urlParams.set('searchTerm', searchTerm);
+        const searchQuery = urlParams.toString();
+        router.push(`/search?${searchQuery}`);
+    };
+
 
     const handleLogout = () => {
         if (googleUser) {
@@ -56,7 +74,7 @@ const Headers = () => {
                                 alt={user.name || user.displayName}
                                 onError={(e) => { e.target.onerror = null; e.target.src = defaultLogo; }}
                             />
-                            <span className="text-gray-900 font-bold font-Josefin_Sans text-md truncate max-w-[7.5rem]">
+                            <span className="text-gray-900 font-bold font-Josefin_Sans hidden sm:block text-md truncate max-w-[7.5rem]">
                                 {currentUser?.name || user.displayName}
                             </span>
                             <svg
@@ -85,6 +103,13 @@ const Headers = () => {
                             leaveTo="transform opacity-0 scale-95"
                         >
                             <Menu.Items className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                <Menu.Item>
+                                    {({ active }) => (
+                                        <div className={` block sm:hidden bg-black text-white px-4 py-2 text-md ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
+                                            <span className="block truncate font-Josefin_Sans text-md font-medium">{user.name}</span>
+                                        </div>
+                                    )}
+                                </Menu.Item>
                                 <div className="py-1 font-Josefin_Sans">
                                     <Menu.Item>
                                         {({ active }) => (
@@ -135,19 +160,45 @@ const Headers = () => {
 
     return (
         <div className="shadow-md bg-white duration-200 relative z-40 px-4 py-2 max-w-screen-2xl">
-            <div className="container flex justify-between items-center">
+            <div className=" flex justify-between items-center">
                 <Link href="/" className="flex items-center justify-between mr-4">
                     <img
                         src="/logo.png"
-                        className="md:mr-3 h-10 md:h-16 dark:bg-black rounded-full bg-black"
+                        className="  h-14  md:h-full   md:mr-3 rounded-full bg-black"
                         alt="Logo"
                     />
-                    <span className="self-center text-2xl sm:text-6xl font-[700] font-Style_Script white-nowrap text-spaceblack">
-                        Blog <span className="font-Clicker_Scrip text-3xl sm:text-5xl">Portal</span>
+                    <span className="self-center text-3xl md:text-4xl font-[700] font-Style_Script white-nowrap text-spaceblack">
+                        Blog <span className="font-Clicker_Scrip text-4xl md:text-5xl">Portal</span>
                     </span>
                 </Link>
 
                 <div className="flex justify-between items-center gap-4">
+                    <form onSubmit={handleSubmit} className="relative group hidden md:block">
+                        <input
+                            type="text"
+                            placeholder="Search"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-[200px] sm:w-[200px] group-hover:w-[300px] transition-all duration-300 rounded-full border border-gray-500 px-2 py-1 focus:outline-none focus:border-1 focus:border-primary"
+                        />
+                        <button type="submit" className="absolute top-1/2 -translate-y-1/2 right-3">
+                            <IoMdSearch className="text-gray-600 group-hover:text-primary" />
+                        </button>
+                    </form>
+
+                    <Link
+                        href="/"
+                        className="bg-white hover:bg-spaceblack transition-all duration-300 outline py-1 px-4 rounded-full md:flex items-center gap-3 group hidden md:block"
+                    >
+                        <span className="group-hover:block font-Syne font-normal text-lg text-black group-hover:text-white hidden transition-all duration-300">
+                            Wishlist
+                        </span>
+                        <span className="relative scale-75">
+                            <HiOutlineBookmark className="text-2xl text-black group-hover:text-white drop-shadow-sm cursor-pointer" />
+                            <span className="absolute -top-2 left-4 rounded-full bg-mate_black p-0.5 px-2 text-sm "></span>
+                        </span>
+                    </Link>
+
                     {/* Search form and other components */}
                     {isClient && displayLoginOptions()} {/* Ensure displayLoginOptions only runs on client */}
                 </div>

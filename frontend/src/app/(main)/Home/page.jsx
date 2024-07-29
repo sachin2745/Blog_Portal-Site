@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 
 const fetchPostData = async () => {
   try {
@@ -27,8 +28,8 @@ const Home = () => {
   return (
     <section className="text-gray-600 body-font bg-mate_black dark:bg-primary">
       <div className="text-center font-Jost text-black dark:text-black pt-10">
-        <h1 className="font-bold text-3xl">My Blog</h1>
-        <h3 className="text-1xl">Home &rsaquo; My Blog</h3>
+        <h1 className="font-bold text-3xl font-Montserrat">My Blog</h1>
+        <h3 className="text-sm font-Montserrat ">Home &rsaquo; My Blog</h3>
       </div>
 
       <div className="container px-5 py-24 mx-auto">
@@ -50,10 +51,10 @@ const Home = () => {
         ) : (
           <div className="flex flex-wrap -m-4">
             {postArray.map((post, index) => (
-              <div key={post._id} className="p-4 md:w-1/3">
-                <div className="h-full relative border-2 shadow-xl border-gray-200 border-opacity-60 rounded-lg overflow-hidden">
+              <div key={post._id} className="p-4 md:w-1/3 group">
+                <div className="h-full relative border-2 shadow-xl overflow-hidden border-gray-200 border-opacity-60 rounded-lg ">
                   <img
-                    className="lg:h-48 md:h-36 w-full object-cover object-center"
+                    className="lg:h-48 md:h-36 w-full object-cover object-center inset-0 opacity-80  group-hover:opacity-100 group-hover:scale-105 transition-opacity duration-500 ease-in-out"
                     src={`${process.env.NEXT_PUBLIC_API_URL}/${post.image}`}
                     alt="blog"
                   />
@@ -64,19 +65,20 @@ const Home = () => {
                     <h2 className="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">
                       CATEGORY
                     </h2>
-                    <h1 className="title-font text-lg font-medium text-gray-900 mb-3">
+                    <h1 className="title-font text-lg font-medium text-gray-900 mb-3 capitalize">
                       {post.category}
                     </h1>
-                    <h2 className="leading-relaxed mb-3 line-clamp-*">
+                    <h2 className="leading-relaxed mb-3 line-clamp-* capitalize">
                       {post.title}
                     </h2>
-                    <div className="flex items-center flex-wrap">
+                    <div className="flex items-center flex-wrap ">
                       <Link
                         href={"/viewblog/" + post._id}
-                        className="text-indigo-500 inline-flex items-center md:mb-2 lg:mb-0"
+                        className="text-emerald-600   inline-flex items-center md:mb-2 lg:mb-0"
                       >
-                        Learn More
-                        <svg
+                        Learn More <MdKeyboardDoubleArrowRight  />
+
+                        {/* <svg
                           className="w-4 h-4 ml-2"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -87,7 +89,7 @@ const Home = () => {
                         >
                           <path d="M5 12h14" />
                           <path d="M12 5l7 7-7 7" />
-                        </svg>
+                        </svg> */}
                       </Link>
                     </div>
                   </div>
