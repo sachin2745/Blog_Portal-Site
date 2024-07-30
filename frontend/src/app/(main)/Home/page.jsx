@@ -56,42 +56,32 @@ const Home = () => {
               <div key={post._id} className="p-4 md:w-1/3 ">
                 <div className="h-full relative border-2 shadow-xl  overflow-hidden border-gray-200 border-opacity-60 rounded-lg ">
                   <img
-                    className="lg:h-48 md:h-36 w-full object-cover  block transition duration-200 ease-out transform hover:scale-110"
+                    className="lg:h-48 md:h-36 w-full object-cover opacity-75  block transition duration-200 ease-out transform hover:opacity-100"
                     src={`${process.env.NEXT_PUBLIC_API_URL}/${post.image}`}
                     alt="blog"
                   />
-                  <span className="absolute font-Oswald outline top-0 z-10 left-0 m-3 rounded-sm bg-transparent px-2 text-center text-sm font-bold text-white">
+                  <span className="absolute font-Oswald outline top-0 z-10 left-0 m-3 rounded-sm bg-transparent tracking-wide px-2 text-center text-sm font-bold text-white">
                     Blog {index + 1}
                   </span>
                   <div className="p-6 font-Josefin_Sans">
-                    <h2 className="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">
-                      CATEGORY
-                    </h2>
-                    <h1 className="title-font text-lg font-medium text-gray-900 mb-3 capitalize">
-                      {post.category}
-                    </h1>
-                    <h2 className="leading-relaxed mb-3 line-clamp-* capitalize">
+                    <div className='flex justify-between mb-3'>
+                      <h2 className="tracking-widest text-xs title-font font-medium text-gray-600 ">
+                        CATEGORY
+                      </h2>
+                      <h1 className="title-font text-xs tracking-widest font-medium text-gray-600  uppercase">
+                        {post.category}
+                      </h1>
+                    </div>
+                    <h2 className="leading-relaxed mb-3 font-Montserrat font-bold line-clamp-* capitalize">
                       {post.title}
                     </h2>
-                    <div className="flex items-center flex-wrap ">
+                    <div className="flex items-center flex-wrap  ">
                       <Link
                         href={"/Viewblog/" + post._id}
-                        className="text-emerald-600   inline-flex items-center md:mb-2 lg:mb-0"
+                        className="text-quaternary  hover:text-white bg-white hover:bg-quaternary px-2 py-2  rounded-md transition ease-in-out  duration-300  transform  inline-flex items-center md:mb-0 lg:mb-0"
                       >
-                        Learn More <MdKeyboardDoubleArrowRight  />
+                        Learn More <MdKeyboardDoubleArrowRight />
 
-                        {/* <svg
-                          className="w-4 h-4 ml-2"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M5 12h14" />
-                          <path d="M12 5l7 7-7 7" />
-                        </svg> */}
                       </Link>
                     </div>
                   </div>
