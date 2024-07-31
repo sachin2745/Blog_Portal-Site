@@ -15,6 +15,9 @@ const CommentInput = () => {
     const [comments, setComments] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [commentToDelete, setCommentToDelete] = useState(null);
+    const [editMode, setEditMode] = useState(false);
+    const [editCommentId, setEditCommentId] = useState(null);
+    const [editContent, setEditContent] = useState('');
     const { id } = useParams();
     const { currentUser } = useAppContext();
     const router = useRouter();
@@ -150,8 +153,42 @@ const CommentInput = () => {
         }
     };
 
-    const handleEdit = (commentId) => {
-        // Implement edit functionality here
+    const handleEdit = (commentId, content) => {
+        setEditCommentId(commentId);
+        setEditContent(content);
+        setEditMode(true);
+    };
+
+    const handleEditSubmit = async () => {
+        if (!currentUser) {
+            router.push('/Login');
+            return;
+        }
+
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/comment/edit/${editCommentId}`;
+        try {
+            const res = await fetch(url, {
+                method: "PUT",
+                body: JSON.stringify({ content: editContent }),
+                headers: {
+                    "Content-Type": "application/json",
+                    'x-auth-token': currentUser.token,
+                },
+            });
+
+            if (res.ok) {
+                toast.success("Comment Edited Successfully");
+                setEditMode(false);
+                setEditCommentId(null);
+                setEditContent('');
+                fetchComments(); // Refetch comments after editing
+            } else {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+        } catch (error) {
+            console.error("Error editing comment:", error);
+            toast.error("Failed to edit comment");
+        }
     };
 
     return (
@@ -203,7 +240,7 @@ const CommentInput = () => {
                     </div>
                 </div>
 
-                <div className='  text-center mx-auto'>
+                <div className='text-center mx-auto'>
                     <p className='text-4xl my-7 font-extrabold font-Josefin_Sans'>All comments on this post</p>
                 </div>
 
@@ -226,10 +263,10 @@ const CommentInput = () => {
 
                                     <div className="cursor-pointer">
                                         <Dropdown placement="right-start" size="xl" renderTrigger={() => <span><BiDotsVertical className='text-3xl' /></span>} label="">
-                                            <Dropdown.Item className=''>
+                                            <Dropdown.Item>
                                                 <span
-                                                    onClick={() => handleEdit(comment._id)}
-                                                    className=" px-6 py-2 text-md  text-black font-Montserrat font-semibold hover:bg-gray-100  "
+                                                    onClick={() => handleEdit(comment._id, comment.content)}
+                                                    className="px-6 py-2 text-md text-black font-Montserrat font-semibold hover:bg-gray-100"
                                                 >
                                                     Edit
                                                 </span>
@@ -241,7 +278,7 @@ const CommentInput = () => {
                                                         setShowModal(true);
                                                         setCommentToDelete(comment._id);
                                                     }}
-                                                    className="block px-6 py-2 text-md  text-red-600 font-Montserrat  font-semibold hover:bg-gray-100 "
+                                                    className="block px-6 py-2 text-md text-red-600 font-Montserrat font-semibold hover:bg-gray-100"
                                                 >
                                                     Delete
                                                 </span>
@@ -249,7 +286,7 @@ const CommentInput = () => {
                                         </Dropdown>
                                     </div>
                                 </div>
-                                <span className='block bg-black w-56 h-0.5  mt-1 mb-1'></span>
+                                <span className='block bg-black w-56 h-0.5 mt-1 mb-1'></span>
 
                                 <p className="leading-relaxed mb-6 font-medium font-Montserrat">{comment.content}</p>
 
@@ -263,11 +300,7 @@ const CommentInput = () => {
                                             <div className="like">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="">
                                                     <g strokeWidth={0} id="SVGRepo_bgCarrier" />
-                                                    <g
-                                                        strokeLinejoin="round"
-                                                        strokeLinecap="round"
-                                                        id="SVGRepo_tracerCarrier"
-                                                    />
+                                                    <g strokeLinejoin="round" strokeLinecap="round" id="SVGRepo_tracerCarrier" />
                                                     <g id="SVGRepo_iconCarrier">
                                                         <path d="M20.808,11.079C19.829,16.132,12,20.5,12,20.5s-7.829-4.368-8.808-9.421C2.227,6.1,5.066,3.5,8,3.5a4.444,4.444,0,0,1,4,2,4.444,4.444,0,0,1,4-2C18.934,3.5,21.773,6.1,20.808,11.079Z" />
                                                     </g>
@@ -280,7 +313,6 @@ const CommentInput = () => {
                                             {comment.numberOfLikes}
                                         </span>
                                     </button>
-
                                 </div>
                             </div>
                         </div>
@@ -306,6 +338,35 @@ const CommentInput = () => {
                                 </Button>
                                 <Button color="gray" onClick={() => setShowModal(false)}>
                                     No, cancel
+                                </Button>
+                            </div>
+                        </div>
+                    </Modal.Body>
+                </Modal>
+
+                <Modal show={editMode} size="3xl" popup={true} onClose={() => setEditMode(false)}>
+                    <Modal.Header className='p-5 text-lg font-Montserrat font-bold'>Edit Comment</Modal.Header>
+                    <Modal.Body>
+                        <div className="text-center">
+                            <Textarea
+                                value={editContent}
+                                rows={5}
+                                onChange={(e) => setEditContent(e.target.value)}
+                                placeholder='Edit your comment here...'
+                                className="outline  block font-Montserrat w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-spaceblack sm:text-sm sm:leading-6"
+                            />
+                            <div className="flex justify-center gap-4 mt-4 font-Syne text-lg font-bold">
+                                <Button
+                                   gradientDuoTone="greenToBlue"
+                                    onClick={handleEditSubmit}
+                                >
+                                    Save Changes
+                                </Button>
+                                <Button
+                                    color="gray"
+                                    onClick={() => setEditMode(false)}
+                                >
+                                    Cancel
                                 </Button>
                             </div>
                         </div>
