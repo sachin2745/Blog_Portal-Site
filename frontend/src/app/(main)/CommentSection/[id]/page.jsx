@@ -215,7 +215,7 @@ const CommentInput = () => {
                             <div className="h-full border-b-4 border-t-2 border-s-2 border-e-2 border-gray-900 border-opacity-60 rounded-lg p-4">
                                 <div className='flex justify-between'>
                                     <div>
-                                        <h2 className="text-xl font-bold font-Montserrat text-quaternary">
+                                        <h2 className="text-xl font-bold font-Montserrat text-quaternary capitalize">
                                             {comment.name} {/* Display the name of the commenter */}
                                         </h2>
 
@@ -249,6 +249,8 @@ const CommentInput = () => {
                                         </Dropdown>
                                     </div>
                                 </div>
+                                <span className='block bg-black w-56 h-0.5  mt-1 mb-1'></span>
+
                                 <p className="leading-relaxed mb-6 font-medium font-Montserrat">{comment.content}</p>
 
                                 <div className='flex justify-start items-center'>
