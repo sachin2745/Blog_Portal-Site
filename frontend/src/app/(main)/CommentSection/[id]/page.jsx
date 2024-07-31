@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
@@ -8,7 +9,7 @@ import useAppContext from '@/context/AppContext';
 import { useParams, useRouter } from 'next/navigation';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { BiDotsVertical } from "react-icons/bi";
-import classes from './comment.module.css';
+import  './comment.css';
 
 const CommentInput = () => {
     const [comments, setComments] = useState([]);
@@ -28,7 +29,10 @@ const CommentInput = () => {
             }
             const data = await res.json();
             console.log('Fetched comments:', data);
-            setComments(data);
+            setComments(data.map(comment => ({
+                ...comment,
+                liked: comment.likes.includes(currentUser?.id) // Add liked state
+            })));
         } catch (error) {
             console.error("Error fetching comments:", error);
             toast.error("Failed to load comments");
@@ -114,8 +118,36 @@ const CommentInput = () => {
         }
     };
 
-    const handleLike = (commentId) => {
-        // Implement like functionality here
+    const handleLike = async (commentId) => {
+        console.log(`Liking/unliking comment with ID: ${commentId}`);
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/comment/like/${commentId}`;
+        try {
+            const res = await fetch(url, {
+                method: "POST",
+                headers: {
+                    'x-auth-token': currentUser.token,
+                },
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                console.error("Error response from server:", errorData);
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+
+            const updatedComment = await res.json();
+            console.log("Updated comment:", updatedComment);
+            setComments((prevComments) =>
+                prevComments.map((comment) =>
+                    comment._id === commentId
+                        ? { ...comment, liked: !comment.liked, numberOfLikes: updatedComment.numberOfLikes } // Toggle liked state
+                        : comment
+                )
+            );
+        } catch (error) {
+            console.error("Error liking/unliking comment:", error);
+            toast.error("Failed to like/unlike comment");
+        }
     };
 
     const handleEdit = (commentId) => {
@@ -192,100 +224,94 @@ const CommentInput = () => {
                                         </p>
                                     </div>
 
-
-                                    <div className=" cursor-pointer ">
+                                    <div className="cursor-pointer">
                                         <Dropdown placement="right-start" size="xl" renderTrigger={() => <span><BiDotsVertical className='text-3xl' /></span>} label="">
                                             <Dropdown.Item className=''>
-                                                <button
+                                                <span
                                                     onClick={() => handleEdit(comment._id)}
                                                     className=" px-6 py-2 text-md  text-black font-Montserrat font-semibold hover:bg-gray-100  "
                                                 >
                                                     Edit
-                                                </button>
+                                                </span>
                                             </Dropdown.Item>
                                             <Dropdown.Divider className='bg-quaternary/10 h-1' />
                                             <Dropdown.Item>
-                                                <button
+                                                <span
                                                     onClick={() => {
                                                         setShowModal(true);
                                                         setCommentToDelete(comment._id);
                                                     }}
-                                                    className="block px-6 py-2 text-md  text-red-600 font-Montserrat  font-semibold hover:bg-gray-100  "
+                                                    className="block px-6 py-2 text-md  text-red-600 font-Montserrat  font-semibold hover:bg-gray-100 "
                                                 >
                                                     Delete
-                                                </button>
+                                                </span>
                                             </Dropdown.Item>
                                         </Dropdown>
                                     </div>
+                                </div>
+                                <p className="leading-relaxed mb-6 font-medium font-Montserrat">{comment.content}</p>
+
+                                <div className='flex justify-start items-center'>
+                                    <button
+                                        className="flex"
+                                        onClick={() => handleLike(comment._id)}
+                                    >
+                                        <label className="ui-like">
+                                            <input type="checkbox" />
+                                            <div className="like">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="">
+                                                    <g strokeWidth={0} id="SVGRepo_bgCarrier" />
+                                                    <g
+                                                        strokeLinejoin="round"
+                                                        strokeLinecap="round"
+                                                        id="SVGRepo_tracerCarrier"
+                                                    />
+                                                    <g id="SVGRepo_iconCarrier">
+                                                        <path d="M20.808,11.079C19.829,16.132,12,20.5,12,20.5s-7.829-4.368-8.808-9.421C2.227,6.1,5.066,3.5,8,3.5a4.444,4.444,0,0,1,4,2,4.444,4.444,0,0,1,4-2C18.934,3.5,21.773,6.1,20.808,11.079Z" />
+                                                    </g>
+                                                </svg>
+                                            </div>
+                                        </label>
+
+                                        &nbsp;
+                                        <span className='font-Syne text-xl font-semibold text-neutral-800 -mt-1'>
+                                            {comment.numberOfLikes}
+                                        </span>
+                                    </button>
 
                                 </div>
-                                <span className='block bg-black w-56 h-0.5  mt-1 mb-1'></span>
-
-                                <p className="text-quaternary font-Montserrat font-normal  mt-2 mb-4">
-                                    {comment.content}
-                                </p>
-                                <div className='mt-4 flex items-start w-10 gap-2'>
-                                    {/* <Button color="blue" onClick={() => handleLike(comment._id)}>Like</Button> */}
-                                    <label className={classes.container} >
-                                        <input className={classes.input} type="checkbox" onClick={() => handleLike(comment._id)} />
-                                        <svg
-                                            className={classes.svg}
-                                            id="Glyph"
-                                            version="1.1"
-                                            viewBox="0 0 32 32"
-                                            xmlSpace="preserve"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            xmlnsXlink="http://www.w3.org/1999/xlink"
-                                        >
-                                            <path
-                                                d="M29.845,17.099l-2.489,8.725C26.989,27.105,25.804,28,24.473,28H11c-0.553,0-1-0.448-1-1V13  c0-0.215,0.069-0.425,0.198-0.597l5.392-7.24C16.188,4.414,17.05,4,17.974,4C19.643,4,21,5.357,21,7.026V12h5.002  c1.265,0,2.427,0.579,3.188,1.589C29.954,14.601,30.192,15.88,29.845,17.099z"
-                                                id="XMLID_254_"
-                                            />
-                                            <path
-                                                d="M7,12H3c-0.553,0-1,0.448-1,1v14c0,0.552,0.447,1,1,1h4c0.553,0,1-0.448,1-1V13C8,12.448,7.553,12,7,12z   M5,25.5c-0.828,0-1.5-0.672-1.5-1.5c0-0.828,0.672-1.5,1.5-1.5c0.828,0,1.5,0.672,1.5,1.5C6.5,24.828,5.828,25.5,5,25.5z"
-                                                id="XMLID_256_"
-                                            />
-                                        </svg>
-                                    </label>
-
-                                </div>
-
-
                             </div>
                         </div>
                     ))
                 )}
-            </div>
 
-            <Modal
-                show={showModal}
-                onClose={() => setShowModal(false)}
-                popup
-                size='md'
-            >
-                <Modal.Header />
-                <Modal.Body>
-                    <div className='text-center'>
-                        <HiOutlineExclamationCircle className='h-14 w-14 text-red-500  mb-4 mx-auto' />
-                        <h3 className='mb-5 text-xl text-gray-700 font-Syne font-medium'>
-                            Are you sure you want to delete this comment?
-                        </h3>
-                        <div className='flex justify-center gap-4 font-Syne'>
-                            <Button
-                                color='failure'
-                                onClick={() => handleDelete(commentToDelete)}
-                            >
-                                Yes, I'm sure
-                            </Button>
-                            <Button color='gray' onClick={() => setShowModal(false)}>
-                                No, cancel
-                            </Button>
+                <Modal show={showModal} size="md" popup={true} onClose={() => setShowModal(false)}>
+                    <Modal.Header />
+                    <Modal.Body>
+                        <div className="text-center">
+                            <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+                            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                                Are you sure you want to delete this comment?
+                            </h3>
+                            <div className="flex justify-center gap-4">
+                                <Button
+                                    color="failure"
+                                    onClick={() => {
+                                        handleDelete(commentToDelete);
+                                    }}
+                                >
+                                    Yes, I'm sure
+                                </Button>
+                                <Button color="gray" onClick={() => setShowModal(false)}>
+                                    No, cancel
+                                </Button>
+                            </div>
                         </div>
-                    </div>
-                </Modal.Body>
-            </Modal>
+                    </Modal.Body>
+                </Modal>
+            </div>
         </>
     );
-};
+}
 
 export default CommentInput;

@@ -38,19 +38,21 @@ router.post('/like/:commentId', verifyToken, async (req, res, next) => {
       return next(errorHandler(404, 'Comment not found'));
     }
 
-    const userIndex = comment.likes.indexOf(req.user.id);
+    const userId = req.user.id;
+    const userIndex = comment.likes.indexOf(userId);
+
     if (userIndex === -1) {
       comment.numberOfLikes += 1;
-      comment.likes.push(req.user.id);
+      comment.likes.push(userId);
     } else {
       comment.numberOfLikes -= 1;
       comment.likes.splice(userIndex, 1);
     }
 
     await comment.save();
-    res.status(200).json(comment);
+    return res.status(200).json(comment);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
