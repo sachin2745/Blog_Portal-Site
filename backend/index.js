@@ -17,6 +17,7 @@ const clientsecret = process.env.CLIENT_SECRET;
 const userRouter = require('./routers/userRouter');
 const postRouter = require('./routers/postRouter');
 const utilRouter = require('./routers/util');
+const commentRouter = require('./routers/commentRouter');
 
 app.use(cors({
     origin: "http://localhost:3000",
@@ -30,6 +31,7 @@ app.use(express.json());
 app.use('/user', userRouter);
 app.use('/post', postRouter);
 app.use('/util', utilRouter);
+app.use('/comment', commentRouter);
 
 app.use(express.static('./static/uploads'));
 
@@ -87,7 +89,7 @@ passport.deserializeUser((user, done) => {
 app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
 app.get("/auth/google/callback", passport.authenticate("google", {
-    successRedirect: "http://localhost:3000/Dashboard",
+    successRedirect: "http://localhost:3000",
     failureRedirect: "http://localhost:3000/Login"
 }));
 

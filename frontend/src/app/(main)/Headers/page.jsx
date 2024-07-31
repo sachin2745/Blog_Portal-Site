@@ -106,7 +106,7 @@ const Headers = () => {
                                 <Menu.Item>
                                     {({ active }) => (
                                         <div className={` block sm:hidden bg-black text-white px-4 py-2 text-md ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
-                                            <span className="block truncate font-Josefin_Sans text-md font-medium">{user.name}</span>
+                                            <span className="block truncate font-Josefin_Sans text-md font-medium">  {currentUser?.name || user.displayName}</span>
                                         </div>
                                     )}
                                 </Menu.Item>
